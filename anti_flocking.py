@@ -2,13 +2,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle
 import time
-from intruder import Intruder
+
 from constants import Constants
 from Swarm import Swarm
 from Obstacle import Obstacle
-from rules import arguments, agent_iteration, percentage_covered,update
-from plot import add_video, trajectory_patch, plot_coverage_temperature, plot_simulation_map, draw_obstacles, assign_agent_colors, get_screen_dimensions
-
+from rules import arguments, agent_iteration, percentage_covered
+from plot import add_video, trajectory_patch, plot_coverage_temperature, plot_simulation_map, draw_obstacles, assign_agent_colors, get_screen_dimensions,add_intruder
+#from intruder import Intruder
 # Command line arguments processing
 # Files and directories creation
 arguments()
@@ -51,6 +51,8 @@ obstacles = [o11,o12,o13,o14,
              o31,o32,o33,o34,
              o41,o42,o43,o44]
 # obstacles = []
+
+
 
 if Constants.MODE=="continuous": START_TIME = time.monotonic()
 if Constants.MODE=="unique": START_TIME = 0
@@ -102,33 +104,19 @@ if Constants.INSTANTANEOUS_PERCENTAGE:
 
 
 draw_obstacles(obstacles,ax_trajectories)
+ 
+add_intruder(ax_trajectories)
+
+
+
+
 agent_colors = assign_agent_colors()
-
-
-# Define the intruder parameters
-intruder_position = (250, 250)
-intruder_speed = 50
-
-world_size = (500, 500)  # Set the size of the simulation world
-timesteps = 100  # Set the number of timesteps for the simulation
-dt = 0.1  # Set the time step for the simulation
-
-# Create the intruder object
-intruder = Intruder(intruder_position, world_size, intruder_speed)
-
-# Simulate the swarm and the intruder for the specified number of timesteps
-for i in range(timesteps):
-    rules.update(dt)
-    intruder.update(dt)
-
-# Plot the final positions of the agents and the intruder
-swarm.plot()
-plt.gca().add_artist(plt.Circle(intruder.position, 5, color='red'))
-plt.show()
 
 # Iteration counter
 iter = 0
 FINAL_CONDITION = True
+
+    
 
 # MAIN EXECUTION LOOP
 while FINAL_CONDITION: # 95% coverage or 400 max iterations = 
@@ -218,6 +206,7 @@ while FINAL_CONDITION: # 95% coverage or 400 max iterations =
 
     # FINAL CONDITION to exit loop
     if Constants.MAX_ITERATIONS <= iter or Constants.MAX_COVERAGE <= swarm.coverage_percentage: 
+    
         FINAL_CONDITION = False
 
 

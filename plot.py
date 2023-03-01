@@ -2,9 +2,13 @@ import matplotlib.path as mpath
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
+from matplotlib.patches import Circle
 import time, colorsys, subprocess
 import numpy as np
 import tkinter as tk
+import random
+from threading import Timer
+import math
 
 from constants import Constants
 
@@ -35,6 +39,7 @@ def plot_coverage_temperature(fig, ax_cov_temp, swarm, START_TIME):
         else:
             ax_cov_temp.set_title("Area Coverage Map (Continuous Mode) - All UAVs")
     
+    
     ax_cov_temp.axis('off')
 
     return ax_cov_temp, image_cov_temp
@@ -64,10 +69,46 @@ def draw_obstacles(obstacles, ax_trajectories):
     for obs in obstacles:
         width = obs.ru[0]-obs.ld[0]
         height = obs.ru[1]-obs.ld[1]
-        rect = Rectangle((obs.ld[0], obs.ld[1]), width, height, linewidth=1, edgecolor='black', hatch="////", facecolor="lightgrey")
+        rect = Rectangle((obs.ld[0], obs.ld[1]), width, height, linewidth=1, edgecolor='black', hatch="***", facecolor="lightgrey")
         # Add the patch to the Axes
         if Constants.TRAJECTORY_PLOT: ax_trajectories.add_patch(rect)
+def add_intruder(ax_trajectories):
+    # Create new object parameters
+    if Constants.ITR_MODE=="boundary":
+        r = 1
+        x, y = 0, 0
+        bound = (3,47,3,47) # Specify the boundary as a tuple of (xmin, xmax, ymin, ymax)
+    
 
+        # Randomly choose which side of the boundary to place the circle
+        side = random.choice(['top', 'bottom', 'left', 'right'])
+
+        if side == 'top':
+            x = random.uniform(bound[0] + r, bound[1] - r)
+            y = bound[3] - r
+        elif side == 'bottom':
+            x = random.uniform(bound[0] + r, bound[1] - r)
+            y = bound[2] + r
+        elif side == 'left':
+            x = bound[0] + r
+            y = random.uniform(bound[2] + r, bound[3] - r)
+        elif side == 'right':
+            x = bound[1] - r
+            y = random.uniform(bound[2] + r, bound[3] - r)
+ 
+    else:
+        x = random.uniform(10,45)
+        y = random.uniform(10,45)
+        r = 1
+    def draw_circle():
+            obj = Circle((x, y), r, linewidth=1, edgecolor='black', facecolor='green')
+            ax_trajectories.add_patch(obj)
+            # Add a random delay before drawing the circle
+    delay = random.uniform(25, 100)
+    Timer(delay, draw_circle).start()
+    
+    
+           
 def assign_agent_colors():
     agent_colors = []
     for c in np.arange(0., 360., 360./Constants.NUM_UAVS):
@@ -92,7 +133,7 @@ def add_video(canvas_width, canvas_height,name):
 def get_screen_dimensions():
     root = tk.Tk()
     root.update_idletasks()
-    #root.attributes('-zoomed', True)
+    root.attributes('-fullscreen', True)
     root.state('iconic')
     geometry = root.winfo_geometry()
     dpi = root.winfo_fpixels('1i')
