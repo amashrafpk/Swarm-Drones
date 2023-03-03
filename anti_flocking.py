@@ -1,14 +1,16 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle
+
 import time
+import random
 from intruder import Intruder
 from constants import Constants
 from Swarm import Swarm
 from Obstacle import Obstacle
-from rules import arguments, agent_iteration, percentage_covered,update
+from rules import arguments, agent_iteration, percentage_covered
 from plot import add_video, trajectory_patch, plot_coverage_temperature, plot_simulation_map, draw_obstacles, assign_agent_colors, get_screen_dimensions
-
+#from intruder import Intruder
 # Command line arguments processing
 # Files and directories creation
 arguments()
@@ -52,6 +54,8 @@ obstacles = [o11,o12,o13,o14,
              o41,o42,o43,o44]
 # obstacles = []
 
+
+
 if Constants.MODE=="continuous": START_TIME = time.monotonic()
 if Constants.MODE=="unique": START_TIME = 0
 
@@ -66,7 +70,7 @@ instant_coverage = [0]
 #              PLOTTING GRAPH AND OBSTACLES
 # ======================================================
 
-fig, ((ax_cov_temp, ax_trajectories), (ax_inst_graph, ax_cov_graph)) = plt.subplots(2, 2, gridspec_kw={'height_ratios': [3, 1]})
+fig, ((ax_trajectories)) = plt.subplots(2, 2, gridspec_kw={'height_ratios': [3, 1]})
 fig.tight_layout()
 
 width_in, height_in = get_screen_dimensions()
@@ -102,33 +106,26 @@ if Constants.INSTANTANEOUS_PERCENTAGE:
 
 
 draw_obstacles(obstacles,ax_trajectories)
+
+
+
+
+# Move the intruder after the patch has been added to the axes
+if Constants.INTRUDER:
+    intruder = Intruder([random.uniform(3,10),random.uniform(3,10)], 1, [0, 0])
+    draw_intruder = Circle(intruder.center, intruder.radius, color='red', alpha=0.5)
+    ax_trajectories.add_patch(draw_intruder)
+    
+
+
+
 agent_colors = assign_agent_colors()
-
-
-# Define the intruder parameters
-intruder_position = (250, 250)
-intruder_speed = 50
-
-world_size = (500, 500)  # Set the size of the simulation world
-timesteps = 100  # Set the number of timesteps for the simulation
-dt = 0.1  # Set the time step for the simulation
-
-# Create the intruder object
-intruder = Intruder(intruder_position, world_size, intruder_speed)
-
-# Simulate the swarm and the intruder for the specified number of timesteps
-for i in range(timesteps):
-    rules.update(dt)
-    intruder.update(dt)
-
-# Plot the final positions of the agents and the intruder
-swarm.plot()
-plt.gca().add_artist(plt.Circle(intruder.position, 5, color='red'))
-plt.show()
 
 # Iteration counter
 iter = 0
 FINAL_CONDITION = True
+
+    
 
 # MAIN EXECUTION LOOP
 while FINAL_CONDITION: # 95% coverage or 400 max iterations = 
@@ -161,6 +158,10 @@ while FINAL_CONDITION: # 95% coverage or 400 max iterations =
         history_y[agent].append(swarm.pos[agent][1])
 
         # Trajectory drawing
+        if Constants.INTRUDER:
+            intruder.move(Constants.TIME_STEP)
+            draw_intruder.center = intruder.center # update the center of the circle patch
+            ax_trajectories.figure.canvas.draw()
         if Constants.TRAJECTORY_PLOT:
             ax_trajectories.add_patch(trajectory_patch(history_x,history_y,agent,agent_colors))
             # Add sensor and communication radius circles
@@ -218,6 +219,7 @@ while FINAL_CONDITION: # 95% coverage or 400 max iterations =
 
     # FINAL CONDITION to exit loop
     if Constants.MAX_ITERATIONS <= iter or Constants.MAX_COVERAGE <= swarm.coverage_percentage: 
+    
         FINAL_CONDITION = False
 
 
