@@ -7,14 +7,15 @@ class Constants(object):
     LENGTH = 50         # Map length
     WIDTH = 50          # Map width
     GEO_FENCE_WIDTH = 3 # Geo-fence width
+    IN_AREA=WIDTH-GEO_FENCE_WIDTH
 
     # -------------------- UAV PARAMETERS --------------------
-    NUM_UAVS = 10      # Num of total UAVs
+    NUM_UAVS = 4        # Num of total UAVs
     CONSTANT_VELOCITY = 3 # In meters per second
     W_MAX = 45      # Max heading angle change in degrees
     R_C = 15    # Communication range 
     R_S = 5     # Sensor-perception range
-
+    INTRUDER=True
     # ----------- WEIGHTS for velocity parameters ------------
     K_O= 0.8    # Obstacle and neighbor avoidance
     K_C= 0.4    # Decentering
@@ -52,8 +53,11 @@ class Constants(object):
     # COVERAGE MODE
     #  + unique: Unique coverage (no time consideration) E.g. agricultural coverage only once
     #  + continuous: Surveillance coverage (time consideration) E.g. surveillance of an industrial compound
-    MODE = "unique"
-     
+    MODE = "continuous"
+    # INTRUDER MODE
+    # boundary:an intruder appers near the boundry during a random time in simulation
+    # ranom:an intruder appers any random position in the plot during a random time in simulation 
+    ITR_MODE="boundary"
     
     # Minimum goal distance that must be ensured between agent goal and neighbor goal.
     # Again, this avoids both UAVs moving towards same uncovered areas.
