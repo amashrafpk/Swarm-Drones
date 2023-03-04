@@ -112,7 +112,7 @@ draw_obstacles(obstacles,ax_trajectories)
 
 # Move the intruder after the patch has been added to the axes
 if Constants.INTRUDER:
-    intruder = Intruder([random.uniform(3,10),random.uniform(3,10)], 1, [0, 0],(3,Constants.IN_AREA),(3,Constants.IN_AREA))
+    intruder = Intruder([random.uniform(3,Constants.IN_AREA),random.uniform(3,Constants.IN_AREA)], 1, [0, 0])
     draw_intruder = Circle(intruder.center, intruder.radius, color='red', alpha=0.5)
     ax_trajectories.add_patch(draw_intruder)
     
@@ -159,7 +159,7 @@ while FINAL_CONDITION: # 95% coverage or 400 max iterations =
 
         # Trajectory drawing
         if Constants.INTRUDER:
-            intruder.move(Constants.TIME_STEP)
+            intruder.move(Constants.TIME_STEP,(3,47),(3,47),obstacles)
             draw_intruder.center = intruder.center # update the center of the circle patch
             ax_trajectories.figure.canvas.draw()
         if Constants.TRAJECTORY_PLOT:

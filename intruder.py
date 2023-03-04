@@ -1,33 +1,43 @@
-import matplotlib.pyplot as plt
+import numpy as np
+import functions
 import random
 
-import numpy as np
-
 class Intruder:
-    def __init__(self, center, radius, velocity, xlim, ylim):
+    def __init__(self, center, radius, velocity):
         self.center = center
         self.radius = radius
         self.velocity = velocity
-        self.xlim = xlim
-        self.ylim = ylim
         
-    def move(self, dt):
+    def move(self, dt, xlim, ylim, obstacles):
         # update velocity randomly
-        noise = np.random.normal(0, 0.1, 2)
-        self.velocity += noise
+        self.velocity = [random.uniform(-1, 1), random.uniform(-1, 1)]
         # normalize velocity to have constant speed
         self.velocity = np.array(self.velocity) / np.linalg.norm(self.velocity)
+        
+        # check for obstacle collision and avoid them
+        for obs in obstacles:
+            p = functions.closest_point_on_line_segment(obs.ld, obs.ru, self.center)
+            p_np=np.array(p)
+            d = np.linalg.norm(p_np - self.center)
+            if d < self.radius + 0.5:
+                v_in = self.velocity
+                v_norm = functions.unitary_vector(obs.ld, obs.ru)
+                self.velocity = functions.reflection(v_in, v_norm)
+                break
+                
         # update position
-        center_new = [c + v*dt for c, v in zip(self.center, self.velocity)]
-        # check if new position is within the limits of the plot
-        if (self.xlim[0] + self.radius <= center_new[0] <= self.xlim[1] - self.radius and 
-            self.ylim[0] + self.radius <= center_new[1] <= self.ylim[1] - self.radius):
-            self.center = center_new
-        else:
-            # if the new position is outside the plot, reflect the velocity
-            if center_new[0] < self.xlim[0] + self.radius or center_new[0] > self.xlim[1] - self.radius:
-                self.velocity[0] = -self.velocity[0]
-            if center_new[1] < self.ylim[0] + self.radius or center_new[1] > self.ylim[1] - self.radius:
-                self.velocity[1] = -self.velocity[1]
-            # update position with new velocity
-            self.center = [c + v*dt for c, v in zip(self.center, self.velocity)]
+        self.center = [c + v*dt for c, v in zip(self.center, self.velocity)]
+        
+        # check for boundary collision and avoid them
+        if self.center[0] < xlim[0]:
+            self.center[0] = xlim[0]
+            self.velocity[0] *= -1
+        elif self.center[0] > xlim[1]:
+            self.center[0] = xlim[1]
+            self.velocity[0] *= -1
+        if self.center[1] < ylim[0]:
+            self.center[1] = ylim[0]
+            self.velocity[1] *= -1
+        elif self.center[1] > ylim[1]:
+            self.center[1] = ylim[1]
+            self.velocity[1] *= -1

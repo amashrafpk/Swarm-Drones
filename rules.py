@@ -289,8 +289,3 @@ def arguments():
     
     if os.path.isfile(str(Constants.RESULTS_DIR+"/"+Constants.FILE_NAME+".mp4")):
         os.remove(str(Constants.RESULTS_DIR+"/"+Constants.FILE_NAME+".mp4"))
-def update(self, dt):
-            # Update the velocity and position of all agents
-            for agent in self.agents:
-                agent.update_velocity(self.behavior_modules, dt)
-                agent.update_position(dt, self.bounds)

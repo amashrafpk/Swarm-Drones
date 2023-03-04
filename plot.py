@@ -2,9 +2,13 @@ import matplotlib.path as mpath
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
+from matplotlib.patches import Circle
 import time, colorsys, subprocess
 import numpy as np
 import tkinter as tk
+import random
+from threading import Timer
+import math
 
 from constants import Constants
 
@@ -35,6 +39,7 @@ def plot_coverage_temperature(fig, ax_cov_temp, swarm, START_TIME):
         else:
             ax_cov_temp.set_title("Area Coverage Map (Continuous Mode) - All UAVs")
     
+    
     ax_cov_temp.axis('off')
 
     return ax_cov_temp, image_cov_temp
@@ -52,6 +57,7 @@ def plot_simulation_map(ax_trajectories, history_x,history_y):
     ax_trajectories.set_xlim(0, Constants.WIDTH)   
     ax_trajectories.set_ylim(0, Constants.LENGTH)  
     ax_trajectories.set_aspect('equal', adjustable='box')
+    ax_trajectories.set_facecolor("Green")
 
     ax_trajectories.set_title("Trajectories plot")
     ax_trajectories.set_xlabel("Distance  ("+str(Constants.WIDTH)+" m)")
@@ -64,10 +70,10 @@ def draw_obstacles(obstacles, ax_trajectories):
     for obs in obstacles:
         width = obs.ru[0]-obs.ld[0]
         height = obs.ru[1]-obs.ld[1]
-        rect = Rectangle((obs.ld[0], obs.ld[1]), width, height, linewidth=1, edgecolor='black', hatch="////", facecolor="lightgrey")
+        rect = Rectangle((obs.ld[0], obs.ld[1]), width, height, linewidth=1, edgecolor='black', hatch="***", facecolor="lightgrey")
         # Add the patch to the Axes
         if Constants.TRAJECTORY_PLOT: ax_trajectories.add_patch(rect)
-
+           
 def assign_agent_colors():
     agent_colors = []
     for c in np.arange(0., 360., 360./Constants.NUM_UAVS):
@@ -92,7 +98,7 @@ def add_video(canvas_width, canvas_height,name):
 def get_screen_dimensions():
     root = tk.Tk()
     root.update_idletasks()
-    #root.attributes('-zoomed', True)
+    root.attributes('-fullscreen', True)
     root.state('iconic')
     geometry = root.winfo_geometry()
     dpi = root.winfo_fpixels('1i')

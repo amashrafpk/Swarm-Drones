@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*- 
+
 import numpy as np
 import random, math
 
@@ -8,7 +8,6 @@ from constants import Constants
 class Swarm(object):
 
     """
-
         Function to initialize Swarm
             num: number of agents to initialize Swarm
             obstacles: obstacle object to include in coverage initial map
@@ -111,9 +110,7 @@ class Swarm(object):
         #         x=-x
         # print(positions)
         # print(angles)
-    
-        return np.array(angles), np.array(positions)
 
-    
+        return np.array(angles), np.array(positions)
 
 

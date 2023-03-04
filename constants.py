@@ -99,7 +99,7 @@ class Constants(object):
 
     VIDEO = False                   # Will output a video of the simulation (needs ffmpeg installed)
     
-    CIRCLE_SENSOR = False            # Draw the Sensor Radius R_S circle in canvas
+    CIRCLE_SENSOR = False          # Draw the Sensor Radius R_S circle in canvas
     CIRCLE_COMMUNICATION = False    # Draw the Communication Radius R_C circle in canvas
 
 
