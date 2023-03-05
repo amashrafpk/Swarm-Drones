@@ -2,13 +2,12 @@ import matplotlib.path as mpath
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
-from matplotlib.patches import Circle
 import time, colorsys, subprocess
 import numpy as np
 import tkinter as tk
-import random
-from threading import Timer
-import math
+
+
+
 
 from constants import Constants
 
@@ -57,7 +56,6 @@ def plot_simulation_map(ax_trajectories, history_x,history_y):
     ax_trajectories.set_xlim(0, Constants.WIDTH)   
     ax_trajectories.set_ylim(0, Constants.LENGTH)  
     ax_trajectories.set_aspect('equal', adjustable='box')
-    ax_trajectories.set_facecolor("Green")
 
     ax_trajectories.set_title("Trajectories plot")
     ax_trajectories.set_xlabel("Distance  ("+str(Constants.WIDTH)+" m)")
