@@ -88,9 +88,16 @@ def decentering_velocity(swarm, agent):
         swarm.vel_dec[agent]=s(norm2(mean,swarm.pos[agent]),Constants.D_C)*unitary_vector(mean,swarm.pos[agent])
     else:
         swarm.vel_dec[agent]= np.zeros((2))
+def intruder_inRange(intruder,swarm,agent):
+    for agent in range(agent,Constants.NUM_UAVS):
+        inter_dist = norm2(swarm.pos[agent],intruder.center)
+        if inter_dist<Constants.R_S:
+           
+            print("inrange of",agent)
+            return True
 
 
-def agent_iteration(START_TIME, swarm, agent):
+def agent_iteration(START_TIME, swarm, agent,intruder):
     """ 
         An agent iteration.
         Velocity components and everything is computed here
@@ -99,7 +106,8 @@ def agent_iteration(START_TIME, swarm, agent):
     init(swarm,agent)
 
     get_neighbors(agent,swarm)
-    
+
+   
     # ====================================================================================
     #     OBSTACLES AVOIDANCE + UPDATE COVERAGE MAP (timestamps) + TARGET GRID SELECTION
     # ====================================================================================
@@ -121,6 +129,7 @@ def agent_iteration(START_TIME, swarm, agent):
             # If obstacles are inside D_0 radius, repulsion
             if swarm.coverage_map[agent][x][y] == Constants.OBSTACLE_VALUE: 
                 swarm.vel_obs[agent] += (s(dist_to_point,Constants.D_O) * unitary_vector(point,swarm.pos[agent]))
+
                 
             # ---------- UPDATE COVERAGE MAP ----------
             # If inside not an obstacle and is inside the sensor range, update timestamp
@@ -129,7 +138,14 @@ def agent_iteration(START_TIME, swarm, agent):
                 if Constants.MODE=="unique": swarm.coverage_map[agent][x][y] = 1
                 if swarm.instantaneous_coverage_map[x][y] == 0:
                     swarm.instantaneous_coverage_map[x][y] = 1
-                
+            #check for intruder in range
+            # if intruder is in range follow the intruder
+            
+            elif(intruder_inRange(intruder,swarm,agent)):
+                 swarm.goal[agent]=intruder.center
+                 vel_goal=unitary_vector(swarm.pos[agent],intruder.center)
+                 best_angle = angle_between(swarm.vel_actual[agent],vel_goal)
+
             # ---------- TARGET GRID SELECTION ----------
             # If not an obstacle and not inside radius, compute heuristics
             # We will perform target grid selection for those cells

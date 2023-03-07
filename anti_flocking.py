@@ -8,9 +8,9 @@ from intruder import Intruder
 from constants import Constants
 from Swarm import Swarm
 from Obstacle import Obstacle
-from rules import arguments, agent_iteration, percentage_covered
+from rules import arguments, agent_iteration, percentage_covered,intruder_inRange
 from plot import add_video, trajectory_patch, plot_coverage_temperature, plot_simulation_map, draw_obstacles, assign_agent_colors, get_screen_dimensions
-#from intruder import Intruder
+
 # Command line arguments processing
 # Files and directories creation
 arguments()
@@ -60,6 +60,7 @@ if Constants.MODE=="continuous": START_TIME = time.monotonic()
 if Constants.MODE=="unique": START_TIME = 0
 
 swarm = Swarm(Constants.NUM_UAVS, obstacles)
+
 history_x = [[swarm.pos[i][0]] for i in range(Constants.NUM_UAVS)]
 history_y = [[swarm.pos[i][1]] for i in range(Constants.NUM_UAVS)]
 history_percentage = [0]
@@ -112,7 +113,7 @@ draw_obstacles(obstacles,ax_trajectories)
 
 # Move the intruder after the patch has been added to the axes
 if Constants.INTRUDER:
-    intruder = Intruder([random.uniform(3,Constants.IN_AREA),random.uniform(3,Constants.IN_AREA)], 1, [0, 0],(3,Constants.IN_AREA),(3,Constants.IN_AREA))
+    intruder = Intruder([random.uniform(3,Constants.IN_AREA),random.uniform(3,Constants.IN_AREA)], 1, [0, 0],(3,Constants.IN_AREA),(3,Constants.IN_AREA),Constants.NUM_UAVS)
     draw_intruder = Circle(intruder.center, intruder.radius, color='red', alpha=0.5)
     ax_trajectories.add_patch(draw_intruder)
     
@@ -149,7 +150,7 @@ while FINAL_CONDITION: # 95% coverage or 400 max iterations =
     for agent in range(Constants.NUM_UAVS):
 
         # Most important function
-        agent_iteration(START_TIME,swarm,agent)
+        agent_iteration(START_TIME,swarm,agent,intruder )
 
         # ===================================================
         #                 PLOT GRAPH

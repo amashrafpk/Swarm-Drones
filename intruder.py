@@ -1,14 +1,15 @@
 
 import numpy as np
+import time
 
 class Intruder:
-    def __init__(self, center, radius, velocity, xlim, ylim):
+    def __init__(self, center, radius, velocity, xlim, ylim,num):
         self.center = center
         self.radius = radius
         self.velocity = velocity
         self.xlim = xlim
         self.ylim = ylim
-        
+        self.inRangeOf=[[] for i in range(num)]
     def move(self, dt, obstacles):
         # update velocity randomly
         noise = np.random.normal(0, 0.1, 2)
@@ -45,3 +46,4 @@ class Intruder:
             
         # update position with new velocity
         self.center = [c + v*dt for c, v in zip(self.center, self.velocity)]
+        time.sleep(1)
